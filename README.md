@@ -15,7 +15,10 @@ to be added.
 
 All project documents are in the [Project Wiki](../../wiki/Home).
 
-- [Vision Statement](../../wiki/Vision%20Statement)
+- [Vision Statement](../../wiki/Vision-Statement)
 - [Requirements](../../wiki/Requirements)
+- [Development Plan](../../wiki/Development-Plan)
+- [Iteration 1 Plan](../../wiki/Iteration-1-Plan)
+- [Task Board](https://github.com/Pichayanon/ku-polls/projects?query=is%3Aopen)
 
-[django-tutorial]: TODO-write-the-django-tutorial-URL-here
+[django-tutorial]: https://docs.djangoproject.com/en/4.1/intro/tutorial01/
