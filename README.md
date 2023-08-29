@@ -19,6 +19,6 @@ All project documents are in the [Project Wiki](../../wiki/Home).
 - [Requirements](../../wiki/Requirements)
 - [Development Plan](../../wiki/Development-Plan)
 - [Iteration 1 Plan](../../wiki/Iteration-1-Plan)
-- [Task Board](https://github.com/Pichayanon/ku-polls/projects?query=is%3Aopen)
+- [Task Board](https://github.com/users/Pichayanon/projects/1)
 
 [django-tutorial]: https://docs.djangoproject.com/en/4.1/intro/tutorial01/
