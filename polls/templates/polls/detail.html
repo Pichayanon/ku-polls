@@ -5,6 +5,13 @@
     <title>Detail</title>
 </head>
 <body>
+    {% if messages %}
+    <ul class="messages">
+        {% for msg in messages %}
+            <li class="{{msg.tags}}">{{ msg }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
     <form action="{% url 'polls:vote' question.id %}" method="post">
     {% csrf_token %}
     <fieldset>
@@ -17,5 +24,7 @@
     </fieldset>
     <input type="submit" value="Vote">
     </form>
+    <a href="{% url 'polls:results' question.id %}">Show Result</a>
+    <a href="{% url 'polls:index' %}">Back to List of Polls</a>
 </body>
 </html>
