@@ -37,6 +37,38 @@ class Question(models.Model):
         now = timezone.now()
         return now - datetime.timedelta(days=1) <= self.pub_date <= now
 
+    @admin.display(
+        boolean=True,
+        ordering='pub_date',
+        description='Is published?',
+    )
+    def is_published(self):
+        """
+        Checks if the poll question is published.
+
+        Return :
+            bool: True if the current date is on or after poll question’s publication date. False otherwise.
+        """
+        now = timezone.now()
+        return now >= self.pub_date
+
+    @admin.display(
+        boolean=True,
+        ordering='pub_date',
+        description='Can vote?',
+    )
+    def can_vote(self):
+        """
+        Checks if the poll question is published.
+
+        Return :
+            bool: True if voting is allowed for this poll question. False otherwise.
+        """
+        now = timezone.now()
+        if self.end_date is None:
+            return now >= self.pub_date
+        return self.pub_date <= now <= self.end_date
+
 
 class Choice(models.Model):
     """ Represents a choice in the poll question.
