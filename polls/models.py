@@ -12,9 +12,11 @@ class Question(models.Model):
     Attributes:
         question_text (str) : Field for text of the question.
         pub_date (datetime) : Field for the publication date.
+        end_date (datetime) : Field for the end date of poll question.
     """
     question_text = models.CharField(max_length=200)
     pub_date = models.DateTimeField('date published')
+    end_date = models.DateTimeField('date ended', null=True)
 
     def __str__(self):
         """ Return a text of the question. """
@@ -27,7 +29,7 @@ class Question(models.Model):
     )
     def was_published_recently(self):
         """
-        Checks if the question was published within last day.
+        Checks if the poll question was published within last day.
 
         Return :
             bool: True if the question was published within last day. False otherwise.
@@ -37,7 +39,7 @@ class Question(models.Model):
 
 
 class Choice(models.Model):
-    """ Represents a choice in the poll.
+    """ Represents a choice in the poll question.
 
     Attribute:
         question (Question) : Foreign key to associate each choice with a question.
@@ -49,7 +51,5 @@ class Choice(models.Model):
     votes = models.IntegerField(default=0)
 
     def __str__(self):
-        """
-        Return a text of the choice.
-        """
+        """ Return a text of the choice. """
         return self.choice_text
