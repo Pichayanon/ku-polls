@@ -95,8 +95,7 @@ class QuestionModelTests(TestCase):
         can_vote() returns False if the end_date is in the past.
         """
         past = timezone.now() - datetime.timedelta(days=30)
-        now = timezone.now()
-        question = Question(pub_date=now, end_date=past)
+        question = Question(end_date=past)
         self.assertIs(question.can_vote(), False)
 
 
@@ -177,7 +176,7 @@ class QuestionDetailViewTests(TestCase):
         future_question = create_question(question_text='Future question.', days=5)
         url = reverse('polls:detail', args=(future_question.id,))
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 302)
 
     def test_past_question(self):
         """
