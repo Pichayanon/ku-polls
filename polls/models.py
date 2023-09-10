@@ -32,7 +32,8 @@ class Question(models.Model):
         Checks if the poll question was published within last day.
 
         Return :
-            bool: True if the question was published within last day. False otherwise.
+            bool: True if the question was published within last day.
+            False otherwise.
         """
         now = timezone.now()
         return now - datetime.timedelta(days=1) <= self.pub_date <= now
@@ -47,7 +48,8 @@ class Question(models.Model):
         Checks if the poll question is published.
 
         Return :
-            bool: True if the current date is on or after poll question’s publication date. False otherwise.
+            bool: True if the current date is on or after poll question’s
+            publication date. False otherwise.
         """
         now = timezone.now()
         return now >= self.pub_date
@@ -59,10 +61,11 @@ class Question(models.Model):
     )
     def can_vote(self):
         """
-        Checks if the poll question is published.
+        Checks if the poll question can vote.
 
         Return :
-            bool: True if voting is allowed for this poll question. False otherwise.
+            bool: True if voting is allowed for this poll question.
+            False otherwise.
         """
         now = timezone.now()
         if self.end_date is None:
@@ -74,7 +77,8 @@ class Choice(models.Model):
     """ Represents a choice in the poll question.
 
     Attribute:
-        question (Question) : Foreign key to associate each choice with a question.
+        question (Question) : Foreign key to associate each choice
+        with a question.
         choice_tex (str) : Field for text of the choice.
         votes (int) : Field for vote tally.
     """
