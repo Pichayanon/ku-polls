@@ -1,8 +1,9 @@
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
+from django.contrib import messages
 
 from .models import Choice, Question
 
@@ -31,6 +32,26 @@ class DetailView(generic.DetailView):
         """
         return Question.objects.filter(pub_date__lte=timezone.now())
 
+    def get(self, request, *args, **kwargs):
+        """
+        Handles the HTTP GET request for the poll detail page.
+        It will be redirected to the poll index page only if
+        the poll question does not exist or voting is not allowed.
+        """
+        try:
+            self.question = self.get_object()
+        except Exception:
+            messages.error(request, f"Poll question {kwargs['pk']}"
+                                    f" does not exist.")
+            return redirect("polls:index")
+        else:
+            if not self.question.can_vote():
+                messages.error(request, f"Poll question {kwargs['pk']}"
+                                        f" does not allow voting.")
+                return redirect("polls:index")
+            else:
+                return super().get(request, *args, **kwargs)
+
 
 class ResultsView(generic.DetailView):
     model = Question
@@ -38,6 +59,9 @@ class ResultsView(generic.DetailView):
 
 
 def vote(request, question_id):
+    """
+    Handles user voting for a specific poll question.
+    """
     question = get_object_or_404(Question, pk=question_id)
     try:
         selected_choice = question.choice_set.get(pk=request.POST['choice'])
@@ -53,4 +77,5 @@ def vote(request, question_id):
         # Always return an HttpResponseRedirect after successfully dealing
         # with POST data. This prevents data from being posted twice if a
         # user hits the Back button.
-        return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
+        return HttpResponseRedirect(reverse('polls:results',
+                                            args=(question.id,)))
