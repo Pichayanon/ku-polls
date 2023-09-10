@@ -16,7 +16,7 @@ class QuestionModelTests(TestCase):
         """
         time = timezone.now() + datetime.timedelta(days=30)
         future_question = Question(pub_date=time)
-        self.assertIs(future_question.was_published_recently(), False)
+        self.assertFalse(future_question.was_published_recently())
 
     def test_was_published_recently_with_old_question(self):
         """
@@ -25,7 +25,7 @@ class QuestionModelTests(TestCase):
         """
         time = timezone.now() - datetime.timedelta(days=1, seconds=1)
         old_question = Question(pub_date=time)
-        self.assertIs(old_question.was_published_recently(), False)
+        self.assertFalse(old_question.was_published_recently())
 
     def test_was_published_recently_with_recent_question(self):
         """
@@ -34,7 +34,7 @@ class QuestionModelTests(TestCase):
         """
         time = timezone.now() - datetime.timedelta(hours=23, minutes=59, seconds=59)
         recent_question = Question(pub_date=time)
-        self.assertIs(recent_question.was_published_recently(), True)
+        self.assertTrue(recent_question.was_published_recently())
 
     def test_is_published_with_future_pub_date(self):
         """
@@ -43,7 +43,7 @@ class QuestionModelTests(TestCase):
         """
         time = timezone.now() + datetime.timedelta(days=30)
         future_question = Question(pub_date=time)
-        self.assertIs(future_question.is_published(), False)
+        self.assertFalse(future_question.is_published())
 
     def test_is_published_with_default_pub_date(self):
         """
@@ -52,7 +52,7 @@ class QuestionModelTests(TestCase):
         """
         time = timezone.now()
         now_question = Question(pub_date=time)
-        self.assertIs(now_question.is_published(), True)
+        self.assertTrue(now_question.is_published())
 
     def test_is_published_with_past_pub_date(self):
         """
@@ -61,7 +61,7 @@ class QuestionModelTests(TestCase):
         """
         time = timezone.now() - datetime.timedelta(days=30)
         past_question = Question(pub_date=time)
-        self.assertIs(past_question.is_published(), True)
+        self.assertTrue(past_question.is_published())
 
     def test_can_vote_after_pub_date_before_end_date(self):
         """
@@ -71,7 +71,7 @@ class QuestionModelTests(TestCase):
         past = timezone.now() - datetime.timedelta(days=30)
         future = timezone.now() + datetime.timedelta(days=30)
         question = Question(pub_date=past, end_date=future)
-        self.assertIs(question.can_vote(), True)
+        self.assertTrue(question.can_vote())
 
     def test_can_vote_after_pub_date_null_end_date(self):
         """
@@ -80,7 +80,7 @@ class QuestionModelTests(TestCase):
         """
         past = timezone.now() - datetime.timedelta(days=30)
         question = Question(pub_date=past)
-        self.assertIs(question.can_vote(), True)
+        self.assertTrue(question.can_vote())
 
     def test_cannot_vote_before_pub_date(self):
         """
@@ -88,7 +88,7 @@ class QuestionModelTests(TestCase):
         """
         future = timezone.now() + datetime.timedelta(days=30)
         question = Question(pub_date=future)
-        self.assertIs(question.can_vote(), False)
+        self.assertFalse(question.can_vote())
 
     def test_cannot_vote_after_end_date(self):
         """
@@ -96,7 +96,7 @@ class QuestionModelTests(TestCase):
         """
         past = timezone.now() - datetime.timedelta(days=30)
         question = Question(end_date=past)
-        self.assertIs(question.can_vote(), False)
+        self.assertFalse(question.can_vote())
 
 
 def create_question(question_text, days):
@@ -171,7 +171,7 @@ class QuestionDetailViewTests(TestCase):
     def test_future_question(self):
         """
         The detail view of a question with a pub_date in the future
-        returns a 404 not found.
+        returns a 302.
         """
         future_question = create_question(question_text='Future question.', days=5)
         url = reverse('polls:detail', args=(future_question.id,))
