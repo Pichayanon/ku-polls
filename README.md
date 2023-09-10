@@ -1,5 +1,7 @@
 ## KU Polls: Online Survey Questions 
 
+[![Django Runtest](https://github.com/Pichayanon/ku-polls/actions/workflows/django-runtest.yml/badge.svg)](https://github.com/Pichayanon/ku-polls/actions/workflows/django-runtest.yml)
+
 An application to conduct online polls and surveys based
 on the [Django Tutorial project][django-tutorial], with
 additional features.
