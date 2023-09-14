@@ -81,6 +81,10 @@ DATABASES = {
     }
 }
 
+AUTHENTICATION_BACKENDS = [
+    # username & password authentication
+   'django.contrib.auth.backends.ModelBackend',
+]
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -100,6 +104,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Where to redirect visitor after login or logout
+LOGIN_REDIRECT_URL = 'polls:index'    # after login, show list of polls
+LOGOUT_REDIRECT_URL = 'login'         # after logout, direct to login page
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
