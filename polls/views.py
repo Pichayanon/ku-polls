@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
-from .models import Choice, Question
+from .models import Choice, Question, Vote
 
 
 class IndexView(generic.ListView):
@@ -40,13 +40,13 @@ class DetailView(generic.DetailView):
         the poll question does not exist or voting is not allowed.
         """
         try:
-            self.question = self.get_object()
+            question = self.get_object()
         except Exception:
             messages.error(request, f"Poll question {kwargs['pk']}"
                                     f" does not exist.")
             return redirect("polls:index")
         else:
-            if not self.question.can_vote():
+            if not question.can_vote():
                 messages.error(request, f"Poll question {kwargs['pk']}"
                                         f" does not allow voting.")
                 return redirect("polls:index")
@@ -73,16 +73,22 @@ def vote(request, question_id):
     try:
         selected_choice = question.choice_set.get(pk=request.POST['choice'])
     except (KeyError, Choice.DoesNotExist):
-        # Redisplay the question voting form.
         return render(request, 'polls/detail.html', {
             'question': question,
             'error_message': "You didn't select a choice.",
         })
-    else:
-        selected_choice.votes += 1
-        selected_choice.save()
-        # Always return an HttpResponseRedirect after successfully dealing
-        # with POST data. This prevents data from being posted twice if a
-        # user hits the Back button.
-        return HttpResponseRedirect(reverse('polls:results',
-                                            args=(question.id,)))
+
+    this_user = request.user
+    try:
+        # find a vote for this user and this question.
+        vote = Vote.objects.get(user=this_user, choice__question=question)
+        # update this vote
+        vote.choice = selected_choice
+    except Vote.DoesNotExist:
+        # no matching vote - create a new Vote
+        vote = Vote(user=this_user, choice=selected_choice)
+    vote.save()
+    messages.success(request, "Vote success")
+
+    return HttpResponseRedirect(reverse('polls:results',
+                                        args=(question.id,)))
