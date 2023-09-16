@@ -3,8 +3,9 @@ import datetime
 from django.test import TestCase
 from django.utils import timezone
 from django.urls import reverse
+from django.contrib.auth.models import User
 
-from .models import Question
+from .models import Question, Choice
 
 
 class QuestionModelTests(TestCase):
@@ -187,3 +188,52 @@ class QuestionDetailViewTests(TestCase):
         url = reverse('polls:detail', args=(past_question.id,))
         response = self.client.get(url)
         self.assertContains(response, past_question.question_text)
+
+
+class AuthenticationTests(TestCase):
+    def setUp(self):
+        """
+        Set up initial data for testing.
+        """
+        self.password = "test1234"
+        self.tester = User.objects.create_user(username="tester", password=self.password)
+        self.tester.first_name = "Tester"
+        self.tester.save()
+        self.question = Question.objects.create(question_text="Test question")
+        self.question.save()
+        self.choice = Choice(choice_text=f"Test choice", question=self.question)
+        self.choice.save()
+
+    def test_login(self):
+        """
+        Test user login.
+        After the user successfully logs in, they will move to another page.
+        If the user fails to log in, they will be on the same page but no error will occur.
+        """
+        login = reverse("login")
+        response = self.client.post(login, {'username': self.tester.username,
+                                            'password': self.password})
+        self.assertEqual(response.status_code, 302)
+
+        response = self.client.post(login, {'username': self.tester.username,
+                                            'password': "12345678"})
+        self.assertEqual(response.status_code, 200)
+
+    def test_logout(self):
+        """
+        Test user logout.
+        After the user logs out, they will move to the login page.
+        """
+        logout = reverse("logout")
+        response = self.client.get(logout)
+        self.assertRedirects(response, reverse("login"))
+
+    def test_signup(self):
+        """
+        Test user signup.
+        After the user signup is complete, they will move to the index page.
+        """
+        signup = reverse("signup")
+        response = self.client.post(signup, {'username': self.tester.username,
+                                             'password': self.password})
+        self.assertRedirects(response, reverse("polls:index"))
