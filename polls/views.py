@@ -1,4 +1,4 @@
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.views import generic
@@ -41,7 +41,7 @@ class DetailView(generic.DetailView):
         """
         try:
             question = get_object_or_404(Question, pk=kwargs['pk'])
-        except Question.DoesNotExist:
+        except (Question.DoesNotExist):
             messages.error(request, f"Poll question {kwargs['pk']}"
                                     f" does not exist.")
             return redirect("polls:index")
@@ -49,7 +49,7 @@ class DetailView(generic.DetailView):
         this_user = request.user
         try:
             prev_vote = Vote.objects.get(user=this_user, choice__question=question)
-        except Vote.DoesNotExist:
+        except (Vote.DoesNotExist, TypeError):
             prev_vote = None
 
         if not question.can_vote():
