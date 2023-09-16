@@ -24,8 +24,8 @@ class IndexView(generic.ListView):
 
 
 class DetailView(generic.DetailView):
-    model = Question
     template_name = 'polls/detail.html'
+    model = Question
 
     def get_queryset(self):
         """
@@ -40,18 +40,26 @@ class DetailView(generic.DetailView):
         the poll question does not exist or voting is not allowed.
         """
         try:
-            question = self.get_object()
-        except Exception:
+            question = get_object_or_404(Question, pk=kwargs['pk'])
+        except Question.DoesNotExist:
             messages.error(request, f"Poll question {kwargs['pk']}"
                                     f" does not exist.")
             return redirect("polls:index")
+
+        this_user = request.user
+        try:
+            prev_vote = Vote.objects.get(user=this_user, choice__question=question)
+        except Vote.DoesNotExist:
+            prev_vote = None
+
+        if not question.can_vote():
+            messages.error(request, f"Poll question {kwargs['pk']}"
+                                    f" does not allow voting.")
+            return redirect("polls:index")
         else:
-            if not question.can_vote():
-                messages.error(request, f"Poll question {kwargs['pk']}"
-                                        f" does not allow voting.")
-                return redirect("polls:index")
-            else:
-                return super().get(request, *args, **kwargs)
+            return render(request, self.template_name,
+                          {"question": question,
+                           "prev_vote": prev_vote})
 
 
 class ResultsView(generic.DetailView):
