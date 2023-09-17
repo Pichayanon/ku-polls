@@ -6,6 +6,13 @@
 </head>
 <body>
     <h2>Register</h2>
+    {% if messages %}
+        {% for msg in messages %}
+            <div>
+                <strong>{{ msg }}</strong>
+            </div>
+        {% endfor %}
+    {% endif %}
         <form method="POST">
             {% csrf_token %}
             <table style="padding: 2ex;">
