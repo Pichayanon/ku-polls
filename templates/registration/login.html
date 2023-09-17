@@ -5,6 +5,16 @@
     <title>Please Login</title>
 </head>
 <body>
+    <header>
+        <a href="{% url 'polls:index' %}">Home</a>
+        {% if user.is_authenticated %}
+            <strong>{{ user.username }}</strong>
+            <a href ="{% url 'logout' %}">Logout</a>
+        {% else %}
+            <a href ="{% url 'login' %}">Login</a>
+            <a href ="{% url 'signup' %}">Signup</a>
+        {% endif %}
+    </header>
     <h2>Login</h2>
     <form method="post">
         {% csrf_token %}
