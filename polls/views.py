@@ -67,6 +67,27 @@ class ResultsView(generic.DetailView):
     model = Question
     template_name = 'polls/results.html'
 
+    def get(self, request, *args, **kwargs):
+        """
+        Handles the HTTP GET request for the poll result page.
+        It will be redirected to the poll index page only if
+        the poll question does not exist or has not been opened yet.
+        """
+        try:
+            question = get_object_or_404(Question, pk=kwargs['pk'])
+        except (Question.DoesNotExist, Http404):
+            messages.error(request, f"Poll question {kwargs['pk']}"
+                                    f" does not exist.")
+            return redirect("polls:index")
+
+        if not question.can_vote():
+            messages.error(request, f"Poll question {kwargs['pk']}"
+                                    f" has not been opened yet.")
+            return redirect("polls:index")
+        else:
+            return render(request, self.template_name,
+                          {"question": question})
+
 
 @login_required
 def vote(request, question_id):
