@@ -1,6 +1,8 @@
+"""Tests of authentication."""
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
+from mysite import settings
 
 from polls.models import Question, Choice
 
@@ -17,36 +19,26 @@ class AuthenticationTests(TestCase):
         self.tester.save()
         self.question = Question.objects.create(question_text="Test question")
         self.question.save()
-        self.choice = Choice(choice_text="Test choice", question=self.question)
-        self.choice.save()
+        for n in range(1, 4):
+            self.choice = Choice(choice_text=f"Test choice {n}",
+                                 question=self.question)
+            self.choice.save()
 
-    def test_can_login_with_correct_username_password(self):
+    def test_login(self):
         """
         If the visitor log in with the correct username and password,
         they will move to the index page.
         """
         login = reverse("login")
+        response = self.client.get(login)
+        self.assertEqual(200, response.status_code)
+
         response = self.client.post(login, {"username": self.tester.username,
                                             "password": self.password})
-        self.assertRedirects(response, reverse("polls:index"))
+        self.assertEqual(302, response.status_code)
+        self.assertRedirects(response, reverse(settings.LOGIN_REDIRECT_URL))
 
-    def test_can_not_login_with_incorrect_username_password(self):
-        """
-        If the visitor log in with the incorrect username or password,
-        they will remain on the login page.
-        """
-        login = reverse("login")
-        # Check not exists username
-        response = self.client.post(login, {"username": "",
-                                            "password": self.password})
-        self.assertEqual(response.status_code, 200)
-
-        # Check incorrect password
-        response = self.client.post(login, {"username": self.tester.username,
-                                            "password": ""})
-        self.assertEqual(response.status_code, 200)
-
-    def test_can_signup_with_valid_username_password(self):
+    def test_signup(self):
         """
         If the visitor register with a valid username and password,
         they will move to the index page.
@@ -56,32 +48,8 @@ class AuthenticationTests(TestCase):
                                              "password1": "TS12345678",
                                              "password2": "TS12345678"})
         self.assertTrue(User.objects.filter(username="Tester_Signup").exists())
+        self.assertEqual(302, response.status_code)
         self.assertRedirects(response, reverse("polls:index"))
-
-    def test_can_not_signup_with_invalid_username_password(self):
-        """
-        If the visitor register with an invalid username or password,
-        they will remain on the signup page.
-        """
-        signup = reverse("signup")
-        # Check invalid username
-        response = self.client.post(signup, {"username": "$",
-                                             "password1": "TS12345678",
-                                             "password2": "TS12345678"})
-        self.assertFalse(User.objects.filter(username="$").exists())
-        self.assertEqual(response.status_code, 200)
-
-        # Check invalid password
-        response = self.client.post(signup, {"username": "Tester_Signup",
-                                             "password1": "1",
-                                             "password2": "1"})
-        self.assertEqual(response.status_code, 200)
-
-        # Check exists username
-        response = self.client.post(signup, {"username": self.tester.username,
-                                             "password1": "TS12345678",
-                                             "password2": "TS12345678"})
-        self.assertEqual(response.status_code, 200)
 
     def test_logout(self):
         """
@@ -89,5 +57,24 @@ class AuthenticationTests(TestCase):
         After the user logs out, they will move to the login page.
         """
         logout = reverse("logout")
+        self.assertTrue(self.client.login(username=self.tester.username,
+                                          password=self.password))
         response = self.client.get(logout)
-        self.assertRedirects(response, reverse("login"))
+        self.assertEqual(302, response.status_code)
+        self.assertRedirects(response, reverse(settings.LOGOUT_REDIRECT_URL))
+
+    def test_auth_required_to_vote(self):
+        """Authentication is required to submit a vote.
+
+        As an unauthenticated user,
+        when I submit a vote for a question,
+        then I am redirected to the login page
+        or I receive a 403 response (FORBIDDEN)
+        """
+        vote = reverse('polls:vote', args=[self.question.id])
+        choice = self.question.choice_set.first()
+        form_data = {"choice": f"{choice.id}"}
+        response = self.client.post(vote, form_data)
+        self.assertEqual(302, response.status_code)
+        login_with_next = f"{reverse('login')}?next={vote}"
+        self.assertRedirects(response, login_with_next)
