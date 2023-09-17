@@ -12,6 +12,7 @@ class AuthenticationTests(TestCase):
         """
         Set up initial data for testing.
         """
+        super().setUp()
         self.password = "test1234"
         self.tester = User.objects.create_user(username="tester",
                                                password=self.password)
