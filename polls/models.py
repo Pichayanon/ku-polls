@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.contrib import admin
 from django.contrib.auth.models import User
 
+
 class Question(models.Model):
     """
     Represents a question in the poll.
@@ -99,6 +100,14 @@ class Choice(models.Model):
 
 
 class Vote(models.Model):
-    """Record a Vote of a Choice by a User."""
+    """
+    Record a vote of a Choice by a User.
+
+    Attributes:
+        choice (Choice) : Foreign key to associate each vote
+        with a choice.
+        user (User) : Foreign key to associate each vote
+        with a user.
+    """
     choice = models.ForeignKey(Choice, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)

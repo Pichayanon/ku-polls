@@ -41,14 +41,15 @@ class DetailView(generic.DetailView):
         """
         try:
             question = get_object_or_404(Question, pk=kwargs['pk'])
-        except (Question.DoesNotExist):
+        except (Question.DoesNotExist, Http404):
             messages.error(request, f"Poll question {kwargs['pk']}"
                                     f" does not exist.")
             return redirect("polls:index")
 
         this_user = request.user
         try:
-            prev_vote = Vote.objects.get(user=this_user, choice__question=question)
+            prev_vote = Vote.objects.get(user=this_user,
+                                         choice__question=question)
         except (Vote.DoesNotExist, TypeError):
             prev_vote = None
 
@@ -75,7 +76,8 @@ def vote(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
 
     if not question.can_vote():
-        messages.error(request, f"Poll question {question_id} does not allow voting.")
+        messages.error(request, f"Poll question {question_id}"
+                                f" does not allow voting.")
         return redirect("polls:index")
 
     try:
@@ -83,8 +85,7 @@ def vote(request, question_id):
     except (KeyError, Choice.DoesNotExist):
         return render(request, 'polls/detail.html', {
             'question': question,
-            'error_message': "You didn't select a choice.",
-        })
+            'error_message': "You didn't select a choice.", })
 
     this_user = request.user
     try:
@@ -95,8 +96,8 @@ def vote(request, question_id):
     except Vote.DoesNotExist:
         # no matching vote - create a new Vote
         vote = Vote(user=this_user, choice=selected_choice)
+
     vote.save()
     messages.success(request, f"Your choice ( {vote.choice} ) has been saved.")
 
-    return HttpResponseRedirect(reverse('polls:results',
-                                        args=(question.id,)))
+    return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))

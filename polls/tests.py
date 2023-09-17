@@ -33,7 +33,8 @@ class QuestionModelTests(TestCase):
         was_published_recently() returns True for questions whose pub_date
         is within the last day.
         """
-        time = timezone.now() - datetime.timedelta(hours=23, minutes=59, seconds=59)
+        time = timezone.now() - datetime.timedelta(hours=23,
+                                                   minutes=59, seconds=59)
         recent_question = Question(pub_date=time)
         self.assertTrue(recent_question.was_published_recently())
 
@@ -174,7 +175,8 @@ class QuestionDetailViewTests(TestCase):
         The detail view of a question with a pub_date in the future
         returns a 302.
         """
-        future_question = create_question(question_text='Future question.', days=5)
+        future_question = create_question(question_text='Future question.',
+                                          days=5)
         url = reverse('polls:detail', args=(future_question.id,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
@@ -184,7 +186,8 @@ class QuestionDetailViewTests(TestCase):
         The detail view of a question with a pub_date in the past
         displays the question's text.
         """
-        past_question = create_question(question_text='Past Question.', days=-5)
+        past_question = create_question(question_text='Past Question.',
+                                        days=-5)
         url = reverse('polls:detail', args=(past_question.id,))
         response = self.client.get(url)
         self.assertContains(response, past_question.question_text)
@@ -196,40 +199,31 @@ class AuthenticationTests(TestCase):
         Set up initial data for testing.
         """
         self.password = "test1234"
-        self.tester = User.objects.create_user(username="tester", password=self.password)
+        self.tester = User.objects.create_user(username="tester",
+                                               password=self.password)
         self.tester.first_name = "Tester"
         self.tester.save()
         self.question = Question.objects.create(question_text="Test question")
         self.question.save()
-        self.choice = Choice(choice_text=f"Test choice", question=self.question)
+        self.choice = Choice(choice_text="Test choice", question=self.question)
         self.choice.save()
 
     def test_can_login_with_correct_username_password(self):
         """
-        Test visitor log in with the correct username and password.
-        After the visitor successfully logs in, they will move to the index page.
+        If the visitor log in with the correct username and password,
+        they will move to the index page.
         """
         login = reverse("login")
-        self.assertTrue(User.objects.filter(username=self.tester.username).exists())
+        self.assertTrue(User.objects.filter(username=self.tester.username)
+                        .exists())
         response = self.client.post(login, {"username": self.tester.username,
                                             "password": self.password})
         self.assertRedirects(response, reverse("polls:index"))
 
-    def test_can_not_login_with_incorrect_password(self):
-        """
-        Test visitor who log in with the incorrect password.
-        If the visitor enters the incorrect password, they will remain on the login page.
-        """
-        login = reverse("login")
-        self.assertTrue(User.objects.filter(username=self.tester.username).exists())
-        response = self.client.post(login, {"username": self.tester.username,
-                                            "password": ""})
-        self.assertEqual(response.status_code, 200)
-
     def test_can_not_login_with_incorrect_username(self):
         """
-        Test visitor who log in with the incorrect username.
-        If the visitor enters the incorrect username, they will remain on the login page.
+        If the visitor log in with the incorrect username,
+        they will remain on the login page.
         """
         login = reverse("login")
         self.assertFalse(User.objects.filter(username="").exists())
@@ -237,48 +231,80 @@ class AuthenticationTests(TestCase):
                                             "password": self.password})
         self.assertEqual(response.status_code, 200)
 
+    def test_can_not_login_with_incorrect_password(self):
+        """
+        If the visitor log in with the incorrect password,
+        they will remain on the login page.
+        """
+        login = reverse("login")
+        self.assertTrue(User.objects.filter(username=self.tester.username)
+                        .exists())
+        response = self.client.post(login, {"username": self.tester.username,
+                                            "password": ""})
+        self.assertEqual(response.status_code, 200)
+
     def test_can_signup_with_valid_username_password(self):
         """
-        Test visitor can register with a valid username and password.
-        After visitor user register is complete, they will move to the index page.
+        If the visitor register with a valid username and password,
+        they will move to the index page.
         """
         signup = reverse("signup")
         response = self.client.post(signup, {"username": "Tester_Signup",
-                                             "password1": "TS12345678", "password2": "TS12345678"})
+                                             "password1": "TS12345678",
+                                             "password2": "TS12345678"})
         self.assertTrue(User.objects.filter(username="Tester_Signup").exists())
         self.assertRedirects(response, reverse("polls:index"))
 
-    def test_can_not_signup_with_invalid_password(self):
-        """
-        Test visitor can register with an invalid password.
-        If the visitor enters an invalid password, they will remain on the signup page.
-        """
-        signup = reverse("signup")
-        response = self.client.post(signup, {'username': "Tester_Signup",
-                                             'password1': "", 'password2': ""})
-        self.assertFalse(User.objects.filter(username="Tester_Signup").exists())
-        self.assertEqual(response.status_code, 200)
-
     def test_can_not_signup_with_invalid_username(self):
         """
-        Test visitor can register with an invalid username.
-        If the visitor enters an invalid username, they will remain on the signup page.
+        If the visitor register with an invalid username,
+        they will remain on the signup page.
         """
         signup = reverse("signup")
-        response = self.client.post(signup, {'username': "$",
-                                             'password1': "TS12345678", "password2": "TS12345678"})
-        self.assertFalse(User.objects.filter(username="Tester_Signup").exists())
+        response = self.client.post(signup, {"username": "$",
+                                             "password1": "TS12345678",
+                                             "password2": "TS12345678"})
+        self.assertFalse(User.objects.filter(username="Tester_Signup")
+                         .exists())
+        self.assertEqual(response.status_code, 200)
+
+    def test_can_not_signup_with_exist_username(self):
+        """
+        If the visitor register with an exist username,
+        they will remain on the signup page.
+        """
+        signup = reverse("signup")
+        self.assertTrue(User.objects.filter(username=self.tester.username)
+                        .exists())
+        response = self.client.post(signup, {"username": self.tester.username,
+                                             "password1": "TS12345678",
+                                             "password2": "TS12345678"})
+        self.assertEqual(response.status_code, 200)
+
+    def test_can_not_signup_with_invalid_password(self):
+        """
+        If the visitor register with an invalid password,
+        they will remain on the signup page.
+        """
+        signup = reverse("signup")
+        response = self.client.post(signup, {"username": "Tester_Signup",
+                                             "password1": "",
+                                             "password2": ""})
+        self.assertFalse(User.objects.filter(username="Tester_Signup")
+                         .exists())
         self.assertEqual(response.status_code, 200)
 
     def test_can_not_signup_with_invalid_confirm_password(self):
         """
-        Test visitor can register with an invalid confirm password.
-        If the visitor enters an invalid confirm password, they will remain on the signup page.
+        If the visitor register with an invalid confirm password,
+        they will remain on the signup page.
         """
         signup = reverse("signup")
         response = self.client.post(signup, {"username": "Tester_Signup",
-                                             "password1": "TS12345678", "password2": "TS123456789"})
-        self.assertFalse(User.objects.filter(username="Tester_Signup").exists())
+                                             "password1": "TS12345678",
+                                             "password2": "TS123456789"})
+        self.assertFalse(User.objects.filter(username="Tester_Signup")
+                         .exists())
         self.assertEqual(response.status_code, 200)
 
     def test_logout(self):
