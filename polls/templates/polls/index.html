@@ -8,28 +8,26 @@
 </head>
 <body>
     <header>
-        <a href="{% url 'polls:index' %}">Home</a>
+    <ul>
+        <li><a href="{% url 'polls:index' %}">Home</a></li>
         {% if user.is_authenticated %}
-            <strong>{{ user.username }}</strong>
-            <a href ="{% url 'logout' %}">Logout</a>
+            <li><strong class="name">{{ user.username }}</strong></li>
+            <li><a href ="{% url 'logout' %}">Logout</a></li>
         {% else %}
-            <a href ="{% url 'login' %}">Login</a>
-            <a href ="{% url 'signup' %}">Signup</a>
+            <li><a href ="{% url 'login' %}">Login</a></li>
+            <li><a href ="{% url 'signup' %}">Signup</a></li>
         {% endif %}
+    </ul>
     </header>
 
-    {% if user.is_authenticated %}
-        <strong>Welcome back, {{ user.username.title }}</strong>
-    {% else %}
-        <strong>Please login to vote</strong>
-    {% endif %}
-
     {% if messages %}
-        {% for msg in messages %}
-            <div>
-                <strong>{{ msg }}</strong>
-            </div>
-        {% endfor %}
+        <div class="alert-error">
+            {% for msg in messages %}
+                <div>
+                    <strong>{{ msg }}</strong>
+                </div>
+            {% endfor %}
+        </div>
     {% endif %}
 
     {% if latest_question_list %}
@@ -41,8 +39,8 @@
                 </tr>
                 {% for question in latest_question_list %}
                 <tr>
-                    <td><a href="{% url 'polls:detail' question.id %}">{{ question.question_text }}</a></td>
-                    <td><a href="{% url 'polls:results' question.id %}">Show Result</a></td>
+                    <td class="poll"><a href="{% url 'polls:detail' question.id %}">{{ question.question_text }}</a></td>
+                    <td><a class="button" href="{% url 'polls:results' question.id %}">Show Result</a></td>
                 </tr>
                 {% endfor %}
             </table>
