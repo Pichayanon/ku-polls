@@ -1,6 +1,6 @@
 ## Instructions for how to install and configure application
 
-> If you use the code below and find ***python : command not found***, change from **python** to **python3**.
+> If you run the code below and find ***python : command not found***, change **python** to **python3**.
 
 1. Clone repository from GitHub to your computer.
     ```
@@ -21,9 +21,10 @@
      ```
    * Windows
      ```
-     . .\venv\Scripts\activate
+     venv\Scripts\activate
      ```
 5. Install dependencies.
+    > If you can't use **pip**, change it to **pip3**.
    ```
    pip install -r requirements.txt
    ```
