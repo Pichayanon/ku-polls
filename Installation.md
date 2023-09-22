@@ -1,6 +1,6 @@
 ## Instructions for how to install and configure application
 
-> If you run the code below and find ***python : command not found***, change **python** to **python3**.
+> Note : If you run the code below and find ***python : command not found***, change **python** to **python3**.
 
 1. Clone repository from GitHub to your computer.
     ```
@@ -24,10 +24,10 @@
      venv\Scripts\activate
      ```
 5. Install dependencies.
-    > If you can't use **pip**, change it to **pip3**.
    ```
    pip install -r requirements.txt
    ```
+   > Note : If you can't use **pip**, change it to **pip3**.
 6. Set values for externalized variables.
    * macOS / Linux
      ```

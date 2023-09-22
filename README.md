@@ -10,10 +10,9 @@ This app was created as part of the [Individual Software Process](
 https://cpske.github.io/ISP) course at Kasetsart University.
 
 ## How to Install
-Please read how to install and configure application from [Installation.md](Installation.md).
+Read how to install and configure application from [Installation.md](Installation.md).
 
 ## How to Run
-> If you use the code below and find ***python : command not found***, change **python** to **python3**.
 1. Activate the virtual environment.
    * macOS / Linux
      ```
@@ -21,12 +20,13 @@ Please read how to install and configure application from [Installation.md](Inst
      ```
    * Windows
      ```
-     . .\venv\Scripts\activate
+     venv\Scripts\activate
      ```
 2. Starting development server.
     ```
     python manage.py runserver
     ```
+    > Note : If you can't use **python**, change it to **python3**.
 3. To use the application, open the browser and access http://localhost:8000.
 4. To close the application, quit the server with CONTROL-C.
 5. Deactivate the virtual environment.
