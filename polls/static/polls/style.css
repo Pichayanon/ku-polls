@@ -4,4 +4,109 @@ li a {
 
 body {
     background: white url("images/background.png") no-repeat;
+    background-size: cover;
+    height: 100vh;
+}
+
+header ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #008B73;
+}
+
+header li {
+  float: left;
+}
+
+header li a {
+  display: block;
+  color: #C5FCEE;
+  text-align: center;
+  padding: 15px 15px;
+  text-decoration: none;
+}
+
+.name {
+  display: block;
+  color: #FDF7FF;
+  text-align: center;
+  padding: 15px 15px;
+  text-decoration: none;
+}
+
+header li a:hover {
+  background-color: gray;
+}
+
+table {
+  border-collapse: collapse;
+  width: 80%;
+  border: 1px solid black;
+  border-radius: 10px;
+}
+
+th {
+  border: 1px solid black;
+  text-align: center;
+  background-color: #008B73;
+  padding: 10px;
+  color: #FDF7FF;
+}
+
+td {
+  border: 1px solid black;
+  text-align: center;
+  background-color: #FDF7FF;
+  padding: 10px;
+}
+
+
+td a{
+  color: black;
+}
+
+.poll {
+  text-align: left;
+}
+
+.button {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #4A4453;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 15px;
+}
+
+.vote-button {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #CFAA60;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 10px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+.alert-success{
+  font-size: 15px;
+  padding: 10px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  background-color: green;
+  color: white;
+}
+
+.alert-error {
+  font-size: 15px;
+  padding: 10px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  background-color: red;
+  color: white;
 }

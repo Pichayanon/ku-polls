@@ -8,40 +8,43 @@
 </head>
 <body>
     <header>
-        <a href="{% url 'polls:index' %}">Home</a>
+    <ul>
+        <li><a href="{% url 'polls:index' %}">Home</a></li>
         {% if user.is_authenticated %}
-            <strong>{{ user.username }}</strong>
-            <a href ="{% url 'logout' %}">Logout</a>
+            <li><strong class="name">{{ user.username }}</strong></li>
+            <li><a href ="{% url 'logout' %}">Logout</a></li>
         {% else %}
-            <a href ="{% url 'login' %}">Login</a>
-            <a href ="{% url 'signup' %}">Signup</a>
+            <li><a href ="{% url 'login' %}">Login</a></li>
+            <li><a href ="{% url 'signup' %}">Signup</a></li>
         {% endif %}
+    </ul>
     </header>
 
     {% if messages %}
-        {% for msg in messages %}
-            <div>
-                <strong>{{ msg }}</strong>
-            </div>
-        {% endfor %}
+        <div class="alert-error">
+            {% for msg in messages %}
+                <div>
+                    <strong>{{ msg }}</strong>
+                </div>
+            {% endfor %}
+        </div>
     {% endif %}
 
     <form action="{% url 'polls:vote' question.id %}" method="post">
     {% csrf_token %}
     <fieldset>
         <legend><h1>{{ question.question_text }}</h1></legend>
-        {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
         {% for choice in question.choice_set.all %}
             <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}"
                    {% if prev_vote != None and choice.id == prev_vote.choice.id %}checked{% endif %}>
             <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
         {% endfor %}
     </fieldset>
-    <input type="submit" value="Vote">
+    <input class="vote-button" type="submit" value="Vote">
     </form>
 
-    <a href="{% url 'polls:results' question.id %}">Show Result</a>
-    <a href="{% url 'polls:index' %}">Back to List of Polls</a>
+    <a class="button" href="{% url 'polls:results' question.id %}">Show Result</a>
+    <a class="button" href="{% url 'polls:index' %}">Back to List of Polls</a>
 </body>
 </html>
 
