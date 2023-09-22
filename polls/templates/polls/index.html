@@ -19,9 +19,9 @@
     </header>
 
     {% if user.is_authenticated %}
-        <p>Welcome back, {{ user.username.title }}</p>
+        <strong>Welcome back, {{ user.username.title }}</strong>
     {% else %}
-        Please <a href ="{% url 'login' %}">Login</a> to vote
+        <strong>Please login to vote</strong>
     {% endif %}
 
     {% if messages %}
